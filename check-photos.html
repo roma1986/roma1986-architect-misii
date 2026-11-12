@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Перевірка фото · Архітектор місії</title>
+  <style>
+    body { font: 16px/1.5 system-ui, "Segoe UI", sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; color: #172238; }
+    h1 { font-size: 1.4rem; }
+    .sum { padding: .8rem 1rem; border-radius: 8px; background: #eef1f5; margin: 1rem 0; }
+    .ok { color: #1f6a49; } .bad { color: #b3261e; } .warn { color: #8a5a06; }
+    table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+    th, td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid #cbd2dc; }
+    code { background: #eef1f5; padding: .05rem .3rem; border-radius: 4px; }
+    details { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Перевірка фото</h1>
+  <p>Сторінка перевіряє, чи на цьому сайті є всі фото й мініатюри та чи оновлено код гри. Відкрийте її на своєму сайті, наприклад <code>…/check-photos.html</code>.</p>
+  <div id="out" class="sum">Перевіряю…</div>
+  <div id="problems"></div>
+  <details><summary>Усі перевірені файли</summary><table id="all"></table></details>
+  <p><a href="./">До гри</a></p>
+<script>
+const out = document.getElementById('out');
+const exists = async (url) => {
+  try { const r = await fetch(url, { method: 'HEAD', cache: 'no-store' }); return r.status; } catch { return 0; }
+};
+const text = async (url) => { try { return await (await fetch(url, { cache: 'no-store' })).text(); } catch { return ''; } };
+(async () => {
+  const lines = [];
+  const photos = await (await fetch('data/photos.json', { cache: 'no-store' })).json().catch(() => null);
+  const media = await (await fetch('data/media.json', { cache: 'no-store' })).json().catch(() => null);
+  if (!photos || !media) { out.innerHTML = '<b class="bad">Не вдалося прочитати data/photos.json або data/media.json.</b> Перевірте, що папку data/ завантажено.'; return; }
+  const ids = Object.keys(photos).filter((k) => !k.startsWith('_') && !photos[k].skip);
+  const jobs = [];
+  ids.forEach((id) => {
+    jobs.push({ label: id, kind: 'фото', url: `img/items/${id}.jpg`, need: true });
+    jobs.push({ label: id, kind: 'мініатюра', url: `img/items/thumb/${id}.jpg`, need: false });
+  });
+  [...media.items.map((m) => ({ ...m, label: `підсумок ${m.target}/${m.platform_type}`, kind: 'фото підсумку' })),
+   ...(media.maps || []).map((m) => ({ ...m, label: `карта ${m.target}`, kind: 'карта' }))]
+    .forEach((m) => jobs.push({ label: m.label, kind: m.kind, url: m.file, need: false }));
+  const results = await Promise.all(jobs.map(async (j) => ({ ...j, status: await exists(j.url) })));
+  const code = await text('js/ui/gallery.js');
+  const codeNew = code.includes('thumbSrc');
+  const codeMid = !codeNew && code.includes('img/items/${id}.jpg');
+  const photoMiss = results.filter((r) => r.kind === 'фото' && r.status !== 200);
+  const thumbMiss = results.filter((r) => r.kind === 'мініатюра' && r.status !== 200);
+  const otherMiss = results.filter((r) => !['фото', 'мініатюра'].includes(r.kind) && r.status !== 200);
+  lines.push(codeNew ? '<span class="ok">✓ Код гри оновлено: фото підхоплюються автоматично, є підтримка мініатюр.</span>'
+    : codeMid ? '<span class="warn">⚠ Код гри частково оновлено: фото підхоплюються, але мініатюр немає. Завантажте новий js/ui/gallery.js.</span>'
+    : '<span class="bad">✗ На сайті старий код гри (js/ui/gallery.js). Саме через це фото не показуються. Завантажте js/ui/gallery.js, js/ui/briefing.js і style.css з нової версії.</span>');
+  lines.push(`${photoMiss.length ? '<span class="bad">✗' : '<span class="ok">✓'} Фото елементів: ${ids.length - photoMiss.length} з ${ids.length} знайдено.</span>`);
+  lines.push(`${thumbMiss.length ? '<span class="warn">⚠' : '<span class="ok">✓'} Мініатюри: ${ids.length - thumbMiss.length} з ${ids.length} знайдено${thumbMiss.length ? ' (без них сторінка вантажиться довше; запустіть npm run thumbs і завантажте img/items/thumb/)' : ''}.</span>`);
+  lines.push(`${otherMiss.length ? '<span class="warn">⚠' : '<span class="ok">✓'} Фото підсумку й карти: ${results.filter((r) => !['фото', 'мініатюра'].includes(r.kind)).length - otherMiss.length} з ${results.filter((r) => !['фото', 'мініатюра'].includes(r.kind)).length} знайдено.</span>`);
+  out.innerHTML = lines.join('<br>');
+  const bad = results.filter((r) => r.status !== 200 && (r.need || r.kind !== 'мініатюра'));
+  document.getElementById('problems').innerHTML = bad.length
+    ? `<h2>Чого бракує</h2><table><tr><th>Що</th><th>Файл</th><th>Відповідь</th></tr>${bad.map((r) => `<tr><td>${r.label} (${r.kind})</td><td><code>${r.url}</code></td><td class="bad">${r.status || 'немає зв’язку'}</td></tr>`).join('')}</table>`
+    : '<p class="ok">Усе, що потрібно для фото, на місці.</p>';
+  document.getElementById('all').innerHTML = results.map((r) => `<tr><td>${r.label}</td><td>${r.kind}</td><td><code>${r.url}</code></td><td class="${r.status === 200 ? 'ok' : 'bad'}">${r.status || '—'}</td></tr>`).join('');
+})();
+</script>
+</body>
+</html>
