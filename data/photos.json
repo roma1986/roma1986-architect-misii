@@ -1,0 +1,147 @@
+{
+  "_note": "Фото для мініатюр і вікна «Детальніше». Поле nasa_id закріплює конкретне фото (так закріплено лише ті, що були знайдені в API NASA). Де nasa_id немає, скрипт npm run images шукає фото за полем query і бере перший підхожий результат; такі фото позначаються auto: true і їх треба переглянути. Щоб замінити фото, впишіть nasa_id з images.nasa.gov і запустіть: npm run images -- --force",
+  "falcon9": {
+    "query": "Falcon 9 launch"
+  },
+  "falcon_heavy": {
+    "query": "Falcon Heavy launch Psyche"
+  },
+  "atlas_v_541": {
+    "query": "Atlas V Perseverance launch"
+  },
+  "vulcan": {
+    "query": "Vulcan Centaur launch"
+  },
+  "antares": {
+    "query": "Antares rocket launch"
+  },
+  "mars": {
+    "query": "Mars globe Hubble"
+  },
+  "moon": {
+    "query": "full Moon"
+  },
+  "asteroid": {
+    "query": "Bennu OSIRIS-REx",
+    "nasa_id": "2019-02-25_regolith_image_compilation"
+  },
+  "venus": {
+    "query": "Venus Mariner 10"
+  },
+  "europa": {
+    "query": "Europa Galileo"
+  },
+  "orbiter": {
+    "query": "Mars Reconnaissance Orbiter"
+  },
+  "lander": {
+    "query": "InSight lander"
+  },
+  "rover_small": {
+    "query": "Opportunity rover"
+  },
+  "rover_large": {
+    "query": "Perseverance rover",
+    "nasa_id": "PIA24542"
+  },
+  "sampler": {
+    "query": "OSIRIS-REx spacecraft"
+  },
+  "cam_hires": {
+    "query": "HiRISE camera",
+    "nasa_id": "PIA07210"
+  },
+  "ir_spectrometer": {
+    "query": "CRISM instrument"
+  },
+  "orbital_radar": {
+    "query": "SHARAD radar"
+  },
+  "sar": {
+    "query": "Magellan spacecraft"
+  },
+  "neutron": {
+    "query": "DAN instrument Curiosity"
+  },
+  "magnetometer": {
+    "query": "MAVEN magnetometer"
+  },
+  "panorama_cam": {
+    "query": "Mastcam-Z"
+  },
+  "laser_spectrometer": {
+    "query": "SuperCam"
+  },
+  "gpr": {
+    "query": "RIMFAX"
+  },
+  "seismometer": {
+    "query": "InSight SEIS seismometer"
+  },
+  "weather": {
+    "query": "MEDA Perseverance"
+  },
+  "drill": {
+    "query": "Perseverance sample tube"
+  },
+  "moxie": {
+    "query": "MOXIE"
+  },
+  "mass_spectrometer": {
+    "query": "MASPEX"
+  },
+  "lidar": {
+    "query": "OLA laser altimeter",
+    "skip": true,
+    "note": "у NASA Image Library не знайдено підхожого фото — лишається ілюстрація"
+  },
+  "sample_arm": {
+    "query": "TAGSAM"
+  },
+  "solar_s": {
+    "query": "CubeSat solar panels"
+  },
+  "solar_m": {
+    "query": "InSight solar array"
+  },
+  "solar_l": {
+    "query": "Juno solar array"
+  },
+  "solar_xl": {
+    "query": "Europa Clipper solar array",
+    "nasa_id": "PIA26067"
+  },
+  "rtg_1": {
+    "query": "MMRTG",
+    "nasa_id": "PIA23306"
+  },
+  "rtg_2": {
+    "query": "Cassini RTG",
+    "nasa_id": "KSC-97PC1066"
+  },
+  "lga": {
+    "query": "low gain antenna spacecraft"
+  },
+  "hga_small": {
+    "query": "Perseverance high-gain antenna"
+  },
+  "hga_large": {
+    "query": "Mars Reconnaissance Orbiter antenna",
+    "nasa_id": "05pd1113"
+  },
+  "relay_uhf": {
+    "query": "Mars Odyssey"
+  },
+  "backup_antenna": {
+    "query": "Galileo high-gain antenna"
+  },
+  "big_battery": {
+    "query": "spacecraft battery",
+    "skip": true,
+    "note": "у NASA Image Library не знайдено підхожого фото — лишається ілюстрація"
+  },
+  "radiation_vault": {
+    "query": "Juno radiation vault",
+    "nasa_id": "PIA13256"
+  }
+}
